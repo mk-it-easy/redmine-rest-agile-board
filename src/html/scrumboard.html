@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html><head><title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                url: '/versions',
+                dataType: 'json'
+            }).done(function(data) {
+                for (var i in data.versions) {
+                    $('#sprintselect').append($("<option></option>", {
+                        text: data.versions[i].name,
+                        value: data.versions[i].id
+                    }).change());
+                }
+                sprintupdate();
+            });
+        });
+        function sprintupdate() {
+            $.ajax({
+                url: '/todos',
+                dataType: 'json',
+             })
+            .done(function(data) {
+                $('#todocontent').html('');
+                $('#progresscontent').html('');
+                $('#testingcontent').html('');
+                $('#donecontent').html('');
+
+                for(var i in data.issues) {
+                    if (data.issues[i].fixed_version != null && data.issues[i].fixed_version.id == $(sprintselect).find(':selected').val()) {
+
+                        if(data.issues[i].status.id == 2) {
+                            $('#progresscontent').append($("<p></p>").addClass("postit").text(data.issues[i].subject));
+                        } else
+                        if(data.issues[i].status.id == 3) {
+                            $('#donecontent').append($("<p></p>").addClass("postit").text(data.issues[i].subject));
+                        } else
+                        if(data.issues[i].status.id == 8 && data.issues[i].assigned_to == null) {
+                            $('#testingcontent').append($("<p></p>").addClass("unassigned").text(data.issues[i].subject));
+                        } else
+                        if(data.issues[i].status.id == 8 && data.issues[i].assigned_to != null) {
+                            $('#testingcontent').append($("<p></p>").addClass("postit").text(data.issues[i].subject));
+                        } else {
+                            $('#todocontent').append($("<p></p>").addClass("postit").text(data.issues[i].subject));
+                        }
+                    }
+                }
+            })
+        };
+    </script>
+    <style type="text/css">
+
+        #leftcontent {
+        position: absolute;
+        left:1%;
+        width:20%;
+        top:80px;
+        background:#eee;
+        }
+
+        #centerleftcontent {
+        position: absolute;
+        left:22%;
+        width:28%;
+        top:80px;
+        background:#fff;
+        }
+
+        #centerrightcontent {
+        position: absolute;
+        left:51%;
+        width:28%;
+        top:80px;
+        background:#ccc;
+        }
+
+        #rightcontent {
+        position: absolute;
+        left:80%;
+        width:19%;
+        top:80px;
+        background:#ddd;
+        }
+
+        #rightcontent, #centerrightcontent, #centerleftcontent, #leftcontent {
+        border:1px solid #000;
+        }
+
+        .postit {
+            background-color: #ffffaa;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        .unassigned {
+            background-color: #4488ff;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head><body>
+<h1><select name="sprintselect" id="sprintselect" onchange="sprintupdate()"></select></h1>
+
+<div id="leftcontent">
+    <h1>Todo</h1>
+    <div id="todocontent">
+        <p class="todocontent"></p>
+    </div>
+</div>
+
+<div id="centerleftcontent">
+    <h1>In Progress</h1>
+    <div id="progresscontent">
+    <p class="progresscontent"></p>
+    </div>
+</div>
+
+<div id="centerrightcontent">
+    <h1>Testing</h1>
+    <div id="testingcontent">
+    <p class="testingcontent"></p>
+    </div>
+</div>
+
+<div id="rightcontent">
+    <h1>Done</h1>
+    <div id="donecontent">
+    <p class="donecontent"> </p>
+    </div>
+</div>
+
+</body>
+</html>
