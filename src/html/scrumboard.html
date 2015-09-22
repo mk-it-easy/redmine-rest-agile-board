@@ -30,7 +30,7 @@
                 for(var i in data.issues) {
                     if (data.issues[i].fixed_version != null && data.issues[i].fixed_version.id == $(sprintselect).find(':selected').val()) {
 
-                        if(data.issues[i].status.id == 2) {
+                        if(data.issues[i].status.id == 2 || data.issues[i].status.id == 4) {
                             $('#progresscontent').append($("<p></p>").addClass("postit").text(data.issues[i].subject));
                         } else
                         if(data.issues[i].status.id == 3) {
